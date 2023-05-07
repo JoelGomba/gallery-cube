@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import { useEffect, useRef, useState } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
-import { useCursor, MeshReflectorMaterial, Image, Text, Environment } from '@react-three/drei'
+import { useCursor, MeshReflectorMaterial, Image, Text, Environment, PerspectiveCamera } from '@react-three/drei'
 import { useRoute, useLocation } from 'wouter'
 import { easing } from 'maath'
 import getUuid from 'uuid-by-string'
@@ -10,6 +10,7 @@ const GOLDENRATIO = 1.61803398875
 
 export const App = ({ images }) => (
   <Canvas dpr={[1, 1.5]} camera={{ fov: 70, position: [0, 2, 15] }}>
+    <PerspectiveCamera makeDefault fov={70} near={0.01} far={99999} />
     <color attach="background" args={['#191920']} />
     <fog attach="fog" args={['#191920', 0, 15]} />
     <group position={[0, -0.5, 0]}>
@@ -78,8 +79,17 @@ function Frame({ url, c = new THREE.Color(), ...props }) {
     easing.damp3(image.current.scale, [0.85 * (!isActive && hovered ? 0.85 : 1), 0.9 * (!isActive && hovered ? 0.905 : 1), 1], 0.1, dt)
     easing.dampC(frame.current.material.color, hovered ? 'orange' : 'white', 0.1, dt)
   })
+
+  const geo = new THREE.BoxGeometry(1, 1, 1)
+  const mat = new THREE.MeshBasicMaterial({ color: 'blue', side: THREE.BackSide })
   return (
     <group {...props}>
+      {/*       <mesh position={[0, 1, 0.75]} scale={[1, 1, 1]}>
+        <meshBasicMaterial attach="material-0" color="blue" side={THREE.FrontSide} />
+        <meshBasicMaterial attach="material-1" color="pink" side={THREE.BackSide} />
+        <boxGeometry />
+      </mesh> */}
+      <mesh geometry={geo} material={mat} position={[0, 1, 0.75]} scale={[1, 1, 1]} />
       <mesh
         name={name}
         onPointerOver={(e) => (e.stopPropagation(), hover(true))}
@@ -100,3 +110,5 @@ function Frame({ url, c = new THREE.Color(), ...props }) {
     </group>
   )
 }
+
+//https://betterprogramming.pub/travel-in-and-out-of-3d-objects-using-react-three-fiber-36fa514ab6b5
