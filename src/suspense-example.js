@@ -1,6 +1,7 @@
 import React, { Suspense, useRef } from 'react'
-import { Canvas, useFrame } from '@react-three/fiber'
+import { Canvas, useFrame, useLoader } from '@react-three/fiber'
 import { useGLTF } from '@react-three/drei'
+import { TextureLoader } from 'three/src/loaders/TextureLoader'
 
 // This sandbox shows how to prgressively load an asset through nested suspense blocks
 // 1. A generic fallback
@@ -37,3 +38,22 @@ function Rotate(props) {
   useFrame((state) => (ref.current.rotation.y = state.clock.elapsedTime))
   return <group ref={ref} {...props} />
 }
+
+function Cubemap() {
+  // all texture
+  //const texture = useLoader(TextureLoader, '/images/front_texture')
+  //const texture1 = useLoader(TextureLoader, '/images/back_texture')
+  const [map1, map2] = useLoader(TextureLoader, ['/image.jpg', '/image2.png'])
+  return (
+    <mesh>
+      <boxGeometry args={[10, 10, 10]} />
+      <meshBasicMaterial attach="material-0" color="0xffffff" /> {/* px */}
+      <meshBasicMaterial attach="material-1" color="0xffffff" /> {/* nx */}
+      <meshBasicMaterial attach="material-2" color="0xffffff" /> {/* py */}
+      <meshBasicMaterial attach="material-3" color="0xffffff" /> {/* ny */}
+      <meshBasicMaterial attach="material-4" map={map1} transparent /> {/* pz */}
+      <meshBasicMaterial attach="material-5" map={map2} transparent /> {/* nz */}
+    </mesh>
+  )
+}
+//got to do for cubemap face which would go inside the cubemap
